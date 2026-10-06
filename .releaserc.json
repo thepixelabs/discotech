@@ -1,0 +1,34 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [{ "type": "revert", "release": "patch" }]
+      }
+    ],
+    ["@semantic-release/release-notes-generator", { "preset": "conventionalcommits" }],
+    [
+      "@semantic-release/exec",
+      {
+        "verifyReleaseCmd": "if git ls-remote --exit-code --tags origin refs/tags/v${nextRelease.version} >/dev/null; then echo \"tag v${nextRelease.version} already exists on origin; see docs/RELEASING.md\" >&2; exit 1; fi",
+        "prepareCmd": "VERSION=${nextRelease.version} BUILD_NUMBER=$(git rev-list --count HEAD) ./scripts/package-release.sh",
+        "successCmd": "echo \"version=${nextRelease.version}\" >> \"$GITHUB_OUTPUT\""
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "dist/Discotech-*-macOS.dmg" },
+          { "path": "dist/Discotech-*-macOS.zip" },
+          { "path": "dist/Discotech-macOS.dmg" },
+          { "path": "dist/Discotech-macOS.zip" },
+          { "path": "dist/checksums.txt" }
+        ]
+      }
+    ]
+  ]
+}

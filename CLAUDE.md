@@ -1,0 +1,3 @@
+# Discotech
+
+@AGENTS.md

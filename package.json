@@ -1,0 +1,14 @@
+{
+  "name": "discotech-release-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Release tooling only. Discotech itself is a Swift Package (see Package.swift); this file exists solely to pin semantic-release and its plugins for .github/workflows/release.yml. There is no Node application here.",
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "13.0.1",
+    "@semantic-release/exec": "7.1.0",
+    "@semantic-release/github": "12.0.10",
+    "@semantic-release/release-notes-generator": "14.1.1",
+    "conventional-changelog-conventionalcommits": "9.3.1",
+    "semantic-release": "25.0.9"
+  }
+}

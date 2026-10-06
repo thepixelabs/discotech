@@ -1,0 +1,144 @@
+name: CI
+
+# Pull requests run only the jobs their changed files can affect. When called from
+# release.yml (push to main) or run by hand, everything runs.
+# Branch protection requires one check from here: `ci-ok`.
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    outputs:
+      swift: ${{ steps.c.outputs.swift }}
+      lint: ${{ steps.c.outputs.lint }}
+      site: ${{ steps.c.outputs.site }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 2 # the PR merge commit and its base parent
+      - id: c
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          swift=false lint=false site=false
+          if [ "$EVENT" != pull_request ]; then
+            swift=true lint=true site=true
+          else
+            while read -r f; do
+              case "$f" in
+                .github/workflows/ci.yml) swift=true lint=true site=true ;;
+                Sources/*|Tests/*|Package.swift|Package.resolved|Resources/*|docs/TERMS.md) swift=true ;;
+                build.sh|scripts/package-release.sh) swift=true lint=true ;;
+                site/*) site=true ;;
+                scripts/*-site.py|.github/workflows/pages.yml) site=true lint=true ;;
+                *.md|docs/*|LICENSE|.gitignore|.github/ISSUE_TEMPLATE/*) ;; # nothing to build or lint
+                .github/*|scripts/*|.releaserc.json|package.json|package-lock.json) lint=true ;;
+                *) swift=true lint=true site=true ;; # unknown path: run everything
+              esac
+            done < <(git diff --name-only HEAD^1 HEAD)
+          fi
+          echo "swift=$swift lint=$lint site=$site" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'swift=%s\nlint=%s\nsite=%s\n' "$swift" "$lint" "$site" >> "$GITHUB_OUTPUT"
+
+  lint:
+    needs: changes
+    if: needs.changes.outputs.lint == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      ACTIONLINT_VERSION: "1.7.12"
+      ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Shell scripts
+        run: |
+          for f in build.sh scripts/*.sh; do bash -n "$f"; done
+          shellcheck build.sh scripts/*.sh
+      - name: Workflows (actionlint)
+        run: |
+          curl -fsSLo al.tgz "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  al.tgz" | sha256sum -c -
+          tar -xzf al.tgz actionlint && ./actionlint -color
+      - name: Python helpers compile, release config is JSON
+        run: |
+          python3 -m py_compile scripts/*.py
+          python3 -m json.tool .releaserc.json > /dev/null
+
+  site:
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: python3 scripts/check-site.py site
+
+  build:
+    name: Build and test (macOS)
+    needs: changes
+    if: needs.changes.outputs.swift == 'true'
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # build.sh derives BUILD_NUMBER from the commit count
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: latest-stable
+      - id: xcode
+        run: swift --version && echo "version=$(xcodebuild -version | awk 'NR==1{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .build
+          key: spm-xcode${{ steps.xcode.outputs.version }}-${{ hashFiles('Package.*', 'Sources/**', 'Tests/**') }}
+          restore-keys: spm-xcode${{ steps.xcode.outputs.version }}-
+      - name: Build (debug and release), test, fail on warnings
+        run: |
+          set -o pipefail
+          swift build --build-tests 2>&1 | tee "$RUNNER_TEMP/build.log"
+          swift test --skip-build --parallel
+          swift build -c release --arch arm64 2>&1 | tee -a "$RUNNER_TEMP/build.log"
+          if grep "warning:" "$RUNNER_TEMP/build.log"; then echo "::error::Build produced warnings."; exit 1; fi
+      - name: Packaging dry run (never uploaded)
+        env:
+          VERSION: 0.0.0
+          BUILD_NUMBER: ${{ github.run_number }}
+          DIST_DIR: ${{ runner.temp }}/dist
+          BUILD_DIR: ${{ runner.temp }}/build
+        run: ./scripts/package-release.sh
+
+  ci-ok:
+    # Skipped jobs count as passed (their files did not change); failed or cancelled
+    # ones, or a failed `changes` job, fail this check.
+    if: always()
+    needs: [changes, lint, site, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          CHANGES: ${{ needs.changes.result }}
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: $RESULTS"
+          [ "$CHANGES" = success ] || { echo "::error::changes job: $CHANGES"; exit 1; }
+          for r in $RESULTS; do
+            case "$r" in success|skipped) ;; *) echo "::error::a CI job ended '$r'"; exit 1 ;; esac
+          done

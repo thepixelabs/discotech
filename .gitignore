@@ -1,0 +1,31 @@
+.build*/
+build/
+*.app
+.DS_Store
+.claude/
+node_modules/
+dist/
+__pycache__/
+CLAUDE.local.md
+*.log
+.swiftpm/
+xcuserdata/
+DerivedData/
+Thumbs.db
+
+# Never commit signing material or local secrets
+.env
+.env.*
+*.p8
+*.p12
+*.pem
+*.key
+*.cer
+*.mobileprovision
+*.keychain
+*.keychain-db
+
+# Packaged builds belong in releases, not in git
+*.dmg
+*.zip
+*.pkg

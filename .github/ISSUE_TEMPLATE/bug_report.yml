@@ -1,0 +1,76 @@
+name: Bug report
+description: Something doesn't work, looks wrong, or a number doesn't add up.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Screenshots help, but crop out file and folder names you'd rather not share.
+  - type: input
+    id: app-version
+    attributes:
+      label: Discotech version
+      description: Discotech menu › About Discotech, or the release you downloaded.
+      placeholder: "0.7.2"
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      description: Apple menu › About This Mac.
+      placeholder: "macOS 15.5"
+    validations:
+      required: true
+  - type: dropdown
+    id: scan-target
+    attributes:
+      label: What did you scan?
+      options:
+        - A whole drive
+        - A folder
+        - Doesn't depend on a scan
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      multiple: true
+      options:
+        - Ball
+        - Layers
+        - Floor
+        - Findings
+        - Crate
+        - Settings
+        - Scanning
+        - Somewhere else
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do?
+      description: The steps that lead to the problem.
+      placeholder: |
+        1. Scan ~/Projects
+        2. Switch to Layers
+        3. Resize the window to its minimum size
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, appearance, anything else
+      description: Light or dark mode, window size, accessibility settings (Reduce Motion, Increase Contrast) if relevant.

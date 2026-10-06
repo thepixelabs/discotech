@@ -1,0 +1,25 @@
+# Weekly update PRs for the pinned GitHub Actions and the npm release tooling.
+# The ci/build prefixes keep these PRs from cutting an app release on their own.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+    ignore:
+      # 10.x breaks release-notes generation with semantic-release 25's plugins, which
+      # ship conventional-changelog-writer 8. Revisit when those plugins move to 10.
+      - dependency-name: conventional-changelog-conventionalcommits
+        update-types: ["version-update:semver-major"]
+    groups:
+      release-tooling: # semantic-release and its plugins must move together
+        patterns: ["*"]

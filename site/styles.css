@@ -1,0 +1,1836 @@
+/*
+ * Discotech site styles.
+ *
+ * Token layer mirrors the app's "Studio" tokens (Sources/Discotech/UI/DesignTokens.swift):
+ * surfaces, text, accent and data hues, light and dark, plus Increase Contrast variants
+ * (served through `prefers-contrast: more`). Components use only these custom
+ * properties; raw values appear only in the token blocks.
+ *
+ * Page structure: every major block is a "chapter" <section>. Chapters alternate between
+ * the page surface and a tinted band (.band), separated by hairlines, so the page reads in
+ * clear sections instead of one flat sheet. The footer is its own deep band.
+ */
+
+/* ---------- Tokens: light (default) ----------
+ * Theme selection: the page follows the system (prefers-color-scheme) unless the header
+ * switch sets data-theme="light" or "dark" on <html>. Dark tokens are therefore declared
+ * twice: under the system-dark query (unless forced light) and under [data-theme="dark"].
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces. No pure white page: a lavender-tinted off-white like the app's canvas.
+     Chapters alternate between the page and a clearly deeper lavender band (about 7 L*
+     apart); cards are one step lighter than either, so they lift off both. */
+  --surface-page: #ece9f3;
+  --surface-band: #d8d2e9;
+  --surface-card: #fcfbff;
+  --surface-sunken: #e4e0ee;
+  --surface-hover: #dcd6ea;
+  --surface-header: rgb(236 233 243 / 0.88);
+  --surface-stage-from: #f6f4fb;
+  --surface-stage-to: #dcd6ea;
+  --surface-code: #1d1e2b;
+  --surface-footer: #23213a;
+
+  /* Feature band (the Colour chapter): the same calm lavender family, one step deeper,
+     so the colourful screenshots and swatches carry the section. */
+  --surface-feature: #cdc7e5;
+
+  /* Lines and band edges */
+  --line-hairline: rgb(33 31 56 / 0.12);
+  --line-strong: rgb(33 31 56 / 0.22);
+  --line-track: rgb(33 31 56 / 0.08);
+  --band-edge: inset 0 1px 0 rgb(255 255 255 / 0.5), inset 0 -1px 0 rgb(255 255 255 / 0.3);
+
+  /* Text: softened ink, never #000. AA (4.5:1) on page, band, card, sunken and hover. */
+  --text-primary: #211f38;
+  --text-secondary: #433f5c;
+  --text-tertiary: #4b4766;
+  --text-code: #eceef6;
+  --text-on-footer: #d9d8e8;
+  --text-on-footer-muted: #aeabc6;
+
+  /* Roles */
+  --accent: #b020d0;
+  --accent-fill: #8a1caa;
+  --accent-fill-pressed: #741690;
+  --accent-text: #741893;
+  --accent-soft: rgb(138 28 170 / 0.12);
+  --on-accent: #ffffff;
+  --positive: #0a6e2c;
+  --positive-on-code: #7fe39b;
+
+  /* Signature split glow: never text */
+  --brand-pink: #d4107a;
+  --brand-acid: #00c020;
+  --brand-violet: #8a1caa;
+  --glow-x: 3px;
+  --glow-radius: 12px;
+  --glow-pink: 22%;
+  --glow-acid: 16%;
+  --hero-glow-pink: 18%;
+  --hero-glow-violet: 16%;
+  --hero-glow-acid: 10%;
+
+  /* Six data hues (Tokens.Spectrum), wheel order, and badge fills (white glyph on top) */
+  --hue-pink: #ce337c;
+  --hue-violet: #a948c5;
+  --hue-indigo: #6f61ea;
+  --hue-azure: #0082c0;
+  --hue-teal: #008d89;
+  --hue-lime: #498f00;
+  --badge-pink: #ce337c;
+  --badge-violet: #a948c5;
+  --badge-indigo: #6f61ea;
+
+  /* Colour-section swatches: the app's own ramps, smallest step first (data, not UI) */
+  --ramp-studio: #f2d7ec, #e0b0db, #c582cf, #9d55be, #6d2ca2, #43157f;
+  --ramp-traffic: #5cc46a, #a9d65a, #f1e04a, #f7b23b, #f08a2c, #e5562d, #c0262a, #8e1520;
+  --kind-media: #f3e3a0;
+  --kind-archives: #9b4a1f;
+  --kind-apps: #6aa7d8;
+  --kind-code: #e08a3c;
+  --kind-system: #2f4aa0;
+  --kind-documents: #bfe3f2;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(33 25 70 / 0.08), 0 12px 32px rgb(33 25 70 / 0.12);
+  --shadow-stage: 0 2px 4px rgb(33 25 70 / 0.06), 0 24px 48px rgb(33 25 70 / 0.16);
+  --shadow-shot: drop-shadow(0 2px 3px rgb(20 16 40 / 0.10)) drop-shadow(0 12px 24px rgb(20 16 40 / 0.12));
+  --shadow-header: 0 1px 0 rgb(33 31 56 / 0.08), 0 6px 18px rgb(33 25 70 / 0.06);
+
+  /* Space (Tokens.Space) */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 12px;
+  --space-l: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+  --space-section: clamp(64px, 9vw, 120px);
+  --space-head: clamp(32px, 5vw, 56px);
+  --gutter: clamp(16px, 4vw, 44px);
+
+  /* Radius (Tokens.Radius) */
+  --radius-control: 8px;
+  --radius-badge: 8px;
+  --radius-card: 16px;
+  --radius-hero: 22px;
+  --radius-stage: 20px;
+
+  /* Icon sizes */
+  --icon-brand: 28px;
+  --icon-download: 96px;
+  --icon-footer: 24px;
+
+  /* Layout */
+  --content-max: 1160px;
+  --prose-max: 65ch;
+  --header-h: 60px;
+  --header-h-mobile: 104px;
+
+  /* Type: SF Rounded for display and figures, as in the app */
+  --font-display: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --type-hero: clamp(2.375rem, 1.5rem + 4.2vw, 4.25rem);
+  --type-h2: clamp(1.875rem, 1.35rem + 2.1vw, 2.75rem);
+  --type-h3: clamp(1.25rem, 1.12rem + 0.55vw, 1.5rem);
+  --type-h4: 1.1875rem;
+  --type-lede: clamp(1.125rem, 1.05rem + 0.4vw, 1.3125rem);
+  --type-body: 1.0625rem;
+  --type-small: 0.9375rem;
+  --type-caption: 0.875rem;
+  --type-eyebrow: 0.78rem;
+  --tracking-eyebrow: 0.1em;
+  --leading-body: 1.62;
+  --leading-tight: 1.12;
+
+  /* Motion (Tokens.Motion) */
+  --motion-micro: 150ms;
+  --ease-state: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ---------- Tokens: dark (system dark, unless forced light) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-page: #0c0d13;
+    --surface-band: #191b2b;
+    --surface-card: #21243a;
+    --surface-sunken: #11131a;
+    --surface-hover: #2a2d42;
+    --surface-header: rgb(12 13 19 / 0.86);
+    --surface-stage-from: #20233a;
+    --surface-stage-to: #12131d;
+    --surface-code: #07080c;
+    --surface-footer: #060709;
+
+    --surface-feature: #1f2236;
+
+    --line-hairline: rgb(255 255 255 / 0.08);
+    --line-strong: rgb(255 255 255 / 0.16);
+    --line-track: rgb(255 255 255 / 0.09);
+    --band-edge: inset 0 1px 0 rgb(255 255 255 / 0.05);
+
+    --text-primary: #e6e8f1;
+    --text-secondary: #aab0c1;
+    --text-tertiary: #959aae;
+    --text-code: #e6e8f1;
+    --text-on-footer: #cfd2df;
+    --text-on-footer-muted: #959aae;
+
+    --accent: #be48e0;
+    --accent-fill: #8e3bc2;
+    --accent-fill-pressed: #7a31a8;
+    --accent-text: #d48af2;
+    --accent-soft: rgb(190 72 224 / 0.16);
+    --positive: #5be37d;
+
+    --brand-pink: #ff1493;
+    --brand-acid: #39ff14;
+    --brand-violet: #be48e0;
+    --glow-x: 4px;
+    --glow-pink: 30%;
+    --glow-acid: 22%;
+    --hero-glow-pink: 20%;
+    --hero-glow-violet: 22%;
+    --hero-glow-acid: 10%;
+
+    --hue-pink: #fd68a6;
+    --hue-violet: #d578f0;
+    --hue-indigo: #9996fe;
+    --hue-azure: #14affe;
+    --hue-teal: #13bcb8;
+    --hue-lime: #6cbd2e;
+    --badge-pink: #a13564;
+    --badge-violet: #854299;
+    --badge-indigo: #5a53b4;
+
+    --ramp-studio: #3a1f5a, #5a2c86, #8b45b8, #b66ad8, #d79ae9, #f2c9f4;
+
+    --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px rgb(0 0 0 / 0.4);
+    --shadow-stage: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 28px 60px rgb(0 0 0 / 0.5);
+    --shadow-shot: drop-shadow(0 14px 30px rgb(0 0 0 / 0.5));
+    --shadow-header: 0 1px 0 rgb(255 255 255 / 0.07);
+  }
+}
+
+/* ---------- Tokens: dark (forced by the theme switch) ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+    --surface-page: #0c0d13;
+    --surface-band: #191b2b;
+    --surface-card: #21243a;
+    --surface-sunken: #11131a;
+    --surface-hover: #2a2d42;
+    --surface-header: rgb(12 13 19 / 0.86);
+    --surface-stage-from: #20233a;
+    --surface-stage-to: #12131d;
+    --surface-code: #07080c;
+    --surface-footer: #060709;
+
+    --surface-feature: #1f2236;
+
+    --line-hairline: rgb(255 255 255 / 0.08);
+    --line-strong: rgb(255 255 255 / 0.16);
+    --line-track: rgb(255 255 255 / 0.09);
+    --band-edge: inset 0 1px 0 rgb(255 255 255 / 0.05);
+
+    --text-primary: #e6e8f1;
+    --text-secondary: #aab0c1;
+    --text-tertiary: #959aae;
+    --text-code: #e6e8f1;
+    --text-on-footer: #cfd2df;
+    --text-on-footer-muted: #959aae;
+
+    --accent: #be48e0;
+    --accent-fill: #8e3bc2;
+    --accent-fill-pressed: #7a31a8;
+    --accent-text: #d48af2;
+    --accent-soft: rgb(190 72 224 / 0.16);
+    --positive: #5be37d;
+
+    --brand-pink: #ff1493;
+    --brand-acid: #39ff14;
+    --brand-violet: #be48e0;
+    --glow-x: 4px;
+    --glow-pink: 30%;
+    --glow-acid: 22%;
+    --hero-glow-pink: 20%;
+    --hero-glow-violet: 22%;
+    --hero-glow-acid: 10%;
+
+    --hue-pink: #fd68a6;
+    --hue-violet: #d578f0;
+    --hue-indigo: #9996fe;
+    --hue-azure: #14affe;
+    --hue-teal: #13bcb8;
+    --hue-lime: #6cbd2e;
+    --badge-pink: #a13564;
+    --badge-violet: #854299;
+    --badge-indigo: #5a53b4;
+
+    --ramp-studio: #3a1f5a, #5a2c86, #8b45b8, #b66ad8, #d79ae9, #f2c9f4;
+
+    --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px rgb(0 0 0 / 0.4);
+    --shadow-stage: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 28px 60px rgb(0 0 0 / 0.5);
+    --shadow-shot: drop-shadow(0 14px 30px rgb(0 0 0 / 0.5));
+    --shadow-header: 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+/* ---------- Tokens: Increase Contrast ---------- */
+@media (prefers-contrast: more) {
+  :root:not([data-theme="dark"]) {
+    --line-hairline: rgb(33 31 56 / 0.24);
+    --line-strong: rgb(33 31 56 / 0.4);
+    --text-secondary: #312e48;
+    --text-tertiary: #3b3854;
+    --accent: #8a1caa;
+    --hero-glow-pink: 0%;
+    --hero-glow-violet: 6%;
+    --hero-glow-acid: 0%;
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --line-hairline: rgb(255 255 255 / 0.22);
+    --line-strong: rgb(255 255 255 / 0.38);
+    --text-secondary: #c8ccd9;
+    --text-tertiary: #b0b5c6;
+    --accent: #d48af2;
+  }
+}
+@media (prefers-contrast: more) {
+  :root[data-theme="dark"] {
+    --line-hairline: rgb(255 255 255 / 0.22);
+    --line-strong: rgb(255 255 255 / 0.38);
+    --text-secondary: #c8ccd9;
+    --text-tertiary: #b0b5c6;
+    --accent: #d48af2;
+  }
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--surface-page);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Anchored chapters land below the sticky header, not under it. */
+[id] {
+  scroll-margin-top: calc(var(--header-h-mobile) + var(--space-l));
+}
+
+@media (min-width: 1100px) {
+  [id] {
+    scroll-margin-top: calc(var(--header-h) + var(--space-l));
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+a {
+  color: var(--accent-text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+  color: var(--text-primary);
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+code,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+:not(pre) > code {
+  padding: 0.05em 0.35em;
+  border-radius: 5px;
+  background: var(--line-track);
+  overflow-wrap: anywhere;
+}
+
+kbd {
+  display: inline-block;
+  padding-inline: 0.4em;
+  padding-block: 0.05em;
+  border: 1px solid var(--line-strong);
+  border-block-end-width: 2px;
+  border-radius: 6px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 0.82em;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-l);
+  inset-block-start: -100px;
+  z-index: 20;
+  padding: var(--space-s) var(--space-l);
+  border-radius: var(--radius-control);
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space-s);
+}
+
+/* Single-column grids by default; `minmax(0, 1fr)` lets long content wrap inside its box
+   instead of widening the page on phones. Wider layouts are set per component. */
+.steps,
+.view,
+.view-copy,
+.grid-2,
+.feature,
+.privacy,
+.download,
+.download-copy,
+.oss,
+.first-launch,
+.first-launch-head,
+.launch-notes,
+.flow,
+.defs,
+.colour-detail,
+.colour-cards,
+.compare,
+.section-head {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.wrap {
+  inline-size: 100%;
+  max-inline-size: calc(var(--content-max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- Chapters: page surface and tinted bands ---------- */
+.section {
+  position: relative;
+  padding-block: var(--space-section);
+}
+
+.band {
+  background: var(--surface-band);
+  border-block: 1px solid var(--line-hairline);
+  box-shadow: var(--band-edge);
+}
+
+/* Feature band: the Colour chapter, one step deeper than the other bands. */
+.band-feature {
+  background: var(--surface-feature);
+}
+
+/* A soft glow at the top of each band, so a chapter break reads as depth, not a line. */
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  block-size: 160px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-violet) 5%, transparent), transparent);
+  pointer-events: none;
+}
+
+.band > .wrap {
+  position: relative;
+}
+
+/* Eyebrow + heading + one-sentence intro, the same in every chapter. */
+.section-head {
+  display: grid;
+  gap: var(--space-m);
+  align-content: start;
+  max-inline-size: var(--prose-max);
+  margin-block-end: var(--space-head);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+
+.section-head .eyebrow::before {
+  content: "";
+  inline-size: 18px;
+  block-size: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--brand-pink), var(--brand-violet));
+}
+
+.section-head h2 {
+  font-size: var(--type-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.section-head p:not(.eyebrow) {
+  font-size: var(--type-lede);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Cards: soft border and shadow, one step lighter than whatever they sit on. */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---------- Brand marks ---------- */
+.brand-icon,
+.download-icon,
+.footer-brand img {
+  display: block;
+  flex: none;
+  block-size: auto;
+}
+
+.brand-icon {
+  inline-size: var(--icon-brand);
+}
+
+/* ---------- Buttons ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-s);
+  min-block-size: 46px;
+  padding-inline: var(--space-xl);
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-micro) var(--ease-state),
+    box-shadow var(--motion-micro) var(--ease-state),
+    border-color var(--motion-micro) var(--ease-state);
+}
+
+.button:hover {
+  text-decoration: none;
+}
+
+/* The page's primary actions carry the split glow (Tokens.Effect.SplitGlow) */
+.button-primary {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  box-shadow:
+    calc(var(--glow-x) * -1) 0 var(--glow-radius) color-mix(in srgb, var(--brand-pink) var(--glow-pink), transparent),
+    var(--glow-x) 0 var(--glow-radius) color-mix(in srgb, var(--brand-acid) var(--glow-acid), transparent);
+}
+
+.button-primary:hover {
+  box-shadow:
+    calc(var(--glow-x) * -1.4) 0 calc(var(--glow-radius) * 1.4) color-mix(in srgb, var(--brand-pink) var(--glow-pink), transparent),
+    calc(var(--glow-x) * 1.4) 0 calc(var(--glow-radius) * 1.4) color-mix(in srgb, var(--brand-acid) var(--glow-acid), transparent);
+}
+
+.button-primary:active {
+  background: var(--accent-fill-pressed);
+}
+
+.button-secondary {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border-color: var(--line-strong);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+.button-secondary:hover {
+  background: var(--surface-hover);
+}
+
+.button svg {
+  inline-size: 1.1em;
+  block-size: 1.1em;
+  flex: none;
+}
+
+/* ---------- Screenshots: each on a soft "stage" with a caption ---------- */
+.shot {
+  margin: 0;
+}
+
+.shot-media {
+  display: block;
+  padding: clamp(10px, 2.2vw, 24px);
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-stage);
+  background: linear-gradient(160deg, var(--surface-stage-from), var(--surface-stage-to));
+  box-shadow: var(--shadow-stage);
+}
+
+.shot img {
+  inline-size: 100%;
+  filter: var(--shadow-shot);
+}
+
+/* Each screenshot ships as a light and a dark capture; only the one matching the current
+   theme (system or the header switch) is displayed. Both are loading="lazy", and browsers
+   don't fetch a lazy image that isn't displayed, so the hidden variant costs nothing. */
+.theme-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .theme-dark {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .theme-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-dark {
+  display: block;
+}
+
+.shot figcaption {
+  margin-block-start: var(--space-m);
+  padding-inline-start: var(--space-m);
+  border-inline-start: 2px solid var(--line-strong);
+  font-size: var(--type-caption);
+  line-height: 1.5;
+  color: var(--text-tertiary);
+  max-inline-size: var(--prose-max);
+}
+
+.shot figcaption strong {
+  display: block;
+  margin-block-end: var(--space-2xs);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+/* ---------- Header: slim, sticky, section links ---------- */
+.site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  background: var(--surface-header);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: var(--shadow-header);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .site-header {
+    background: var(--surface-page);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Header layout.
+   Below 1100px: one row with brand, GitHub and the theme switch, and the section links in
+   a second row that scrolls sideways inside itself (never the page).
+   From 1100px: everything on one row.
+   Narrowest phones (< 480px): "by PixeLabs" moves from beside the brand into the link row. */
+.site-header .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: var(--space-xs);
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  min-inline-size: 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s);
+  min-block-size: 52px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.by-link {
+  display: none;
+  align-items: center;
+  min-block-size: 40px;
+  padding-inline: var(--space-s);
+  border-radius: 999px;
+  color: var(--text-tertiary);
+  font-size: var(--type-caption);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.by-link:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+@media (min-width: 480px) {
+  .by-link {
+    display: inline-flex;
+  }
+  .nav-by {
+    display: none;
+  }
+}
+
+.site-nav {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-inline-size: 0;
+}
+
+.site-nav ul {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter) var(--space-s);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+  mask: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+}
+
+.site-nav ul::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-by a {
+  color: var(--text-tertiary);
+}
+
+.site-nav a,
+.header-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 40px;
+  padding-inline: var(--space-m);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: var(--type-small);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--motion-micro) var(--ease-state), color var(--motion-micro) var(--ease-state);
+}
+
+.site-nav a:hover,
+.header-link:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Current chapter (set by a small inline script; harmless without it). */
+.site-nav a[aria-current="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+/* Theme switch: one button cycling System, Light, Dark. The icon (and, from 768px, a
+   label) shows the CURRENT choice. Hidden until its script runs. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-s);
+  min-inline-size: 40px;
+  block-size: 40px;
+  padding: 0 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font: 500 var(--type-small) / 1 var(--font-body);
+  cursor: pointer;
+  transition: background-color var(--motion-micro) var(--ease-state);
+}
+
+.theme-toggle:hover {
+  background: var(--surface-hover);
+}
+
+.theme-toggle[hidden] {
+  display: none;
+}
+
+.theme-toggle svg {
+  display: none;
+  inline-size: 18px;
+  block-size: 18px;
+  flex: none;
+}
+
+:root:not([data-theme]) .theme-toggle .icon-system,
+:root[data-theme="light"] .theme-toggle .icon-sun,
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: block;
+}
+
+.theme-label {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .theme-toggle {
+    padding-inline: 12px 14px;
+  }
+  .theme-label {
+    display: inline;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 1100px) {
+  .site-header .wrap {
+    display: flex;
+    gap: var(--space-s);
+    min-block-size: var(--header-h);
+  }
+  .brand-group {
+    margin-inline-end: auto;
+  }
+  .brand {
+    min-block-size: auto;
+  }
+  .site-nav ul {
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    -webkit-mask: none;
+    mask: none;
+  }
+}
+
+/* ---------- Hero: a brand-tinted glow band, static (nothing animates) ---------- */
+.hero {
+  position: relative;
+  padding-block: clamp(56px, 9vw, 112px) clamp(48px, 6vw, 88px);
+  isolation: isolate;
+  background:
+    radial-gradient(48% 42% at 12% 8%, color-mix(in srgb, var(--brand-pink) var(--hero-glow-pink), transparent), transparent 70%),
+    radial-gradient(52% 46% at 50% 0%, color-mix(in srgb, var(--brand-violet) var(--hero-glow-violet), transparent), transparent 72%),
+    radial-gradient(42% 40% at 92% 14%, color-mix(in srgb, var(--brand-acid) var(--hero-glow-acid), transparent), transparent 70%),
+    linear-gradient(180deg, var(--surface-band), var(--surface-page) 62%);
+  border-block-end: 1px solid var(--line-hairline);
+}
+
+.hero-copy {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-l);
+  text-align: center;
+  max-inline-size: 46rem;
+  margin-inline: auto;
+}
+
+.hero h1 {
+  font-size: var(--type-hero);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.hero .lede {
+  font-size: var(--type-lede);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-inline-size: 40rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-m);
+  margin-block-start: var(--space-s);
+}
+
+.hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs) var(--space-l);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--type-small);
+  color: var(--text-tertiary);
+}
+
+.hero-facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s);
+}
+
+.hero-facts li + li::before {
+  content: "";
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  margin-inline-end: var(--space-s);
+}
+
+.hero-shot {
+  margin-block-start: clamp(var(--space-2xl), 6vw, 72px);
+}
+
+.hero-shot .shot-media {
+  border-radius: calc(var(--radius-stage) + 4px);
+}
+
+/* ---------- How it works: numbered steps ---------- */
+.steps {
+  display: grid;
+  gap: var(--space-l);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+@media (min-width: 760px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+.steps li {
+  counter-increment: step;
+  display: grid;
+  gap: var(--space-s);
+  align-content: start;
+  padding: var(--space-xl);
+}
+
+.steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  margin-block-end: var(--space-xs);
+  border-radius: 50%;
+  background: var(--accent-fill);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-pink) 18%, transparent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.steps h3 {
+  font-size: var(--type-h4);
+}
+
+.steps p {
+  color: var(--text-secondary);
+}
+
+/* ---------- Views (also Findings) ---------- */
+.view {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+  padding-block: clamp(var(--space-2xl), 5vw, 64px);
+  border-block-start: 1px solid var(--line-hairline);
+}
+
+.view:first-of-type {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+@media (min-width: 960px) {
+  .view {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(var(--space-2xl), 4vw, 64px);
+  }
+  /* Alternate sides; the screenshot keeps the wider column either way. */
+  .view:nth-of-type(even) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  .view:nth-of-type(even) .view-copy {
+    order: 2;
+  }
+}
+
+.view-copy {
+  display: grid;
+  gap: var(--space-m);
+  align-content: start;
+}
+
+.view-key {
+  justify-self: start;
+  padding: var(--space-2xs) var(--space-m);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.view-copy h3 {
+  font-size: var(--type-h3);
+}
+
+.view-copy > p {
+  color: var(--text-secondary);
+  max-inline-size: var(--prose-max);
+}
+
+.ticks {
+  display: grid;
+  gap: var(--space-s);
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-secondary);
+  font-size: var(--type-small);
+}
+
+.ticks li {
+  position: relative;
+  padding-inline-start: 22px;
+}
+
+.ticks li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  inset-block-start: 0.6em;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--dot, var(--accent));
+}
+
+.view-ball { --dot: var(--hue-pink); }
+.view-layers { --dot: var(--hue-indigo); }
+.view-floor { --dot: var(--hue-teal); }
+.view-findings { --dot: var(--hue-lime); }
+
+.view-findings {
+  margin-block-end: var(--space-2xl);
+}
+
+.everywhere {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  margin: var(--space-xl) 0 0;
+  padding: var(--space-l);
+  list-style: none;
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--line-strong);
+}
+
+.everywhere li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-xs) var(--space-m);
+  border-radius: 999px;
+  border: 1px solid var(--line-hairline);
+  background: var(--surface-card);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+
+/* ---------- Feature cards ---------- */
+.grid-2 {
+  display: grid;
+  gap: var(--space-l);
+}
+
+@media (min-width: 760px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+  .span-2 {
+    grid-column: 1 / -1;
+  }
+}
+
+.feature {
+  display: grid;
+  gap: var(--space-s);
+  align-content: start;
+  padding: clamp(var(--space-xl), 3vw, var(--space-2xl));
+}
+
+.feature h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  margin-block-end: var(--space-xs);
+  font-size: var(--type-h4);
+}
+
+.feature p {
+  color: var(--text-secondary);
+}
+
+.feature p + p {
+  margin-block-start: var(--space-xs);
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: var(--radius-badge);
+  background: var(--badge, var(--hue-violet));
+  color: #fff;
+  flex: none;
+}
+
+.badge svg {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+/* Badge fills: light swatch in light mode, deep base tone in dark, so the white glyph
+   stays legible on both (Tokens.Spectrum.badge). */
+.b-pink { --badge: var(--badge-pink); }
+.b-violet { --badge: var(--badge-violet); }
+.b-indigo { --badge: var(--badge-indigo); }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: var(--space-xs) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: var(--space-2xs) var(--space-s);
+  border-radius: 6px;
+  background: var(--surface-card);
+  border: 1px solid var(--line-hairline);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+}
+
+.defs {
+  display: grid;
+  gap: var(--space-l);
+  margin: var(--space-xs) 0;
+}
+
+.defs div {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.defs dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.defs dd {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.tag {
+  padding: 0 var(--space-s);
+  border-radius: 999px;
+  background: var(--line-track);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Colour swatches: the app's ramps, as a quick legend next to the words. */
+.swatch {
+  display: inline-block;
+  inline-size: 96px;
+  block-size: 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--line-hairline);
+  vertical-align: middle;
+}
+
+.swatch-studio {
+  background: linear-gradient(90deg, var(--ramp-studio));
+}
+
+.swatch-traffic {
+  background: linear-gradient(90deg, var(--ramp-traffic));
+}
+
+.swatch-kind {
+  inline-size: auto;
+  block-size: auto;
+  display: inline-flex;
+  gap: 3px;
+  box-shadow: none;
+}
+
+.swatch-kind i {
+  inline-size: 14px;
+  block-size: 10px;
+  border-radius: 3px;
+  background: var(--k);
+  box-shadow: inset 0 0 0 1px var(--line-hairline);
+}
+
+/* Ordered steps inside cards (the Crate, First launch) */
+.flow {
+  display: grid;
+  gap: var(--space-m);
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+  color: var(--text-secondary);
+}
+
+.flow li {
+  position: relative;
+  padding-inline-start: 38px;
+  counter-increment: flow;
+}
+
+.flow li::before {
+  content: counter(flow);
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  display: grid;
+  place-items: center;
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.note {
+  font-size: var(--type-small);
+  color: var(--text-tertiary);
+}
+
+/* ---------- Colour ---------- */
+.compare {
+  display: grid;
+  gap: var(--space-2xl);
+  margin-block-end: var(--space-3xl);
+}
+
+@media (min-width: 760px) {
+  .compare {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+.compare .shot-media {
+  padding: clamp(8px, 1.2vw, 14px);
+  border-radius: var(--radius-card);
+}
+
+.colour-detail {
+  display: grid;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.colour-cards {
+  display: grid;
+  gap: var(--space-l);
+}
+
+@media (min-width: 960px) {
+  .colour-detail {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 500px);
+  }
+}
+
+.settings-shot {
+  max-inline-size: 500px;
+  justify-self: center;
+}
+
+/* ---------- Privacy ---------- */
+.privacy {
+  display: grid;
+  gap: var(--space-xl);
+  padding: clamp(var(--space-xl), 5vw, 56px);
+  border-radius: var(--radius-hero);
+}
+
+@media (min-width: 960px) {
+  .privacy {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 56px;
+  }
+}
+
+.privacy .section-head {
+  margin: 0;
+}
+
+.privacy-list {
+  display: grid;
+  gap: var(--space-xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.privacy-list li {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: var(--space-m);
+}
+
+.privacy-list svg {
+  inline-size: 32px;
+  block-size: 32px;
+  padding: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--positive) 14%, transparent);
+  color: var(--positive);
+}
+
+.privacy-list strong {
+  display: block;
+  margin-block-end: var(--space-2xs);
+  font-family: var(--font-display);
+  font-size: var(--type-h4);
+  color: var(--text-primary);
+}
+
+.privacy-list span {
+  color: var(--text-secondary);
+}
+
+/* ---------- Download ---------- */
+.download {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+  padding: clamp(var(--space-xl), 5vw, 56px);
+  border-radius: var(--radius-hero);
+  background:
+    radial-gradient(60% 120% at 0% 0%, color-mix(in srgb, var(--brand-violet) 8%, transparent), transparent 70%),
+    var(--surface-card);
+}
+
+.download-icon {
+  inline-size: var(--icon-download);
+  filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--brand-pink) 22%, transparent));
+}
+
+@media (min-width: 960px) {
+  .download {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 40px;
+  }
+  .download-icon {
+    align-self: start;
+  }
+}
+
+.download-copy {
+  display: grid;
+  gap: var(--space-m);
+  max-inline-size: var(--prose-max);
+}
+
+.download-copy h2 {
+  font-size: var(--type-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.download-copy > p:not(.eyebrow, .note) {
+  font-size: var(--type-lede);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.download-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.download-facts li {
+  padding: var(--space-2xs) var(--space-m);
+  border-radius: 999px;
+  border: 1px solid var(--line-hairline);
+  background: var(--surface-sunken);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+
+.download-action {
+  display: grid;
+  gap: var(--space-xs);
+  justify-items: start;
+}
+
+.download-action .button {
+  justify-self: stretch;
+}
+
+/* Version and size line under a Download button; stamped at deploy time. */
+.download-meta,
+.download-links {
+  margin: 0;
+  font-size: var(--type-small);
+  color: var(--text-tertiary);
+}
+
+.download-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.download-links a {
+  color: var(--text-secondary);
+}
+
+.hero .download-meta {
+  margin-block-start: calc(-1 * var(--space-xs));
+}
+
+/* First launch: Gatekeeper steps with copyable Terminal commands */
+.first-launch {
+  display: grid;
+  gap: var(--space-xl);
+  margin-block-start: var(--space-xl);
+  padding: clamp(var(--space-xl), 5vw, 56px);
+  border-radius: var(--radius-hero);
+  /* An accent strip along the top edge, clipped by the card's rounded corners. */
+  background:
+    linear-gradient(90deg, var(--brand-pink), var(--accent-fill)) top / 100% 4px no-repeat,
+    var(--surface-card);
+}
+
+.first-launch-head {
+  display: grid;
+  gap: var(--space-s);
+  max-inline-size: var(--prose-max);
+}
+
+.first-launch h3 {
+  font-size: var(--type-h3);
+}
+
+/* Two equal ways through Gatekeeper, side by side from 860px, stacked below. */
+.launch-options {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-l);
+}
+
+@media (min-width: 860px) {
+  .launch-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+.launch-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-m);
+  align-content: start;
+  padding: clamp(var(--space-l), 3vw, var(--space-2xl));
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-card);
+  background: var(--surface-sunken);
+}
+
+.launch-option h4 {
+  font-size: var(--type-h4);
+}
+
+.option-tag {
+  justify-self: start;
+  padding: var(--space-2xs) var(--space-m);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: var(--type-caption);
+  font-weight: 700;
+}
+
+.launch-option .note {
+  color: var(--text-secondary);
+}
+
+.first-launch-head p,
+.launch-notes p {
+  color: var(--text-secondary);
+}
+
+.launch-steps {
+  gap: var(--space-l);
+  font-size: var(--type-body);
+  color: var(--text-primary);
+}
+
+.launch-steps li {
+  padding-inline-start: 46px;
+  padding-block: 3px;
+}
+
+.launch-steps li::before {
+  inline-size: 32px;
+  block-size: 32px;
+  background: var(--accent-fill);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-pink) 18%, transparent);
+  color: var(--on-accent);
+  font-size: 0.9375rem;
+}
+
+.launch-notes {
+  display: grid;
+  gap: var(--space-m);
+  max-inline-size: var(--prose-max);
+  padding-block-start: var(--space-xl);
+  border-block-start: 1px solid var(--line-hairline);
+}
+
+.launch-notes strong {
+  color: var(--text-primary);
+}
+
+/* Terminal commands: their own dark surface in both themes */
+.cmd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-s);
+  margin-block-start: var(--space-s);
+  padding: var(--space-s) var(--space-s) var(--space-s) var(--space-l);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: var(--radius-control);
+  background: var(--surface-code);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+.cmd code {
+  flex: 1 1 18rem;
+  min-inline-size: 0;
+  padding: 0;
+  background: none;
+  overflow-wrap: break-word;
+  color: var(--text-code);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  user-select: all;
+}
+
+.cmd code::before {
+  content: "$ ";
+  color: var(--positive-on-code);
+  user-select: none;
+}
+
+.copy-button {
+  flex: none;
+  min-block-size: 36px;
+  min-inline-size: 72px;
+  padding-inline: var(--space-m);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: var(--radius-control);
+  background: rgb(255 255 255 / 0.08);
+  color: var(--text-code);
+  font: 600 var(--type-small) / 1 var(--font-display);
+  cursor: pointer;
+  transition: background-color var(--motion-micro) var(--ease-state);
+}
+
+.copy-button:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.copy-button:focus-visible {
+  outline-color: var(--text-code);
+}
+
+.copy-button[hidden] {
+  display: none;
+}
+
+.copy-status {
+  min-block-size: 1.5em;
+  font-size: var(--type-small);
+  color: var(--positive);
+}
+
+.copy-status:empty {
+  min-block-size: 0;
+  margin: 0;
+}
+
+/* ---------- Open source ---------- */
+.oss {
+  display: grid;
+  gap: var(--space-l);
+}
+
+@media (min-width: 760px) {
+  .oss {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+.oss .feature a {
+  font-weight: 600;
+}
+
+.oss-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-m);
+  margin-block-start: var(--space-2xl);
+}
+
+/* Kept for the commented-out support section (see index.html); unused while it's hidden. */
+.support {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+  padding: clamp(var(--space-xl), 4vw, 40px);
+}
+
+.support-copy {
+  display: grid;
+  gap: var(--space-s);
+}
+
+.support-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Footer: its own deep band ---------- */
+.site-footer {
+  padding-block: var(--space-3xl);
+  border-block-start: 1px solid var(--line-hairline);
+  background: var(--surface-footer);
+  color: var(--text-on-footer-muted);
+  font-size: var(--type-small);
+}
+
+.site-footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-l) var(--space-xl);
+}
+
+.site-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-l);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer a {
+  color: var(--text-on-footer);
+}
+
+.site-footer :focus-visible {
+  outline-color: var(--text-on-footer);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  color: var(--text-on-footer);
+}
+
+.footer-brand img {
+  inline-size: var(--icon-footer);
+}
+
+.footer-note {
+  flex-basis: 100%;
+  padding-block-start: var(--space-l);
+  border-block-start: 1px solid rgb(255 255 255 / 0.1);
+}
+
+/* ---------- Reduced motion: every transition collapses to an instant swap ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Print ---------- */
+@media print {
+  .site-header,
+  .hero-actions,
+  .copy-button {
+    display: none;
+  }
+  .band,
+  .hero,
+  .site-footer {
+    background: none;
+  }
+}
+
+/* ---------- Phone refinements ---------- */
+@media (max-width: 559px) {
+  .hero-facts {
+    flex-direction: column;
+    align-items: center;
+  }
+  .hero-facts li + li::before {
+    content: none;
+  }
+  .hero-actions .button {
+    flex: 1 1 100%;
+  }
+}

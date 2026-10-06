@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discotech: see where your Mac's disk space went</title>
+  <meta name="description" content="Discotech is a free, open-source disk space map for macOS. See every file by size in three views, find space that is safe to clear, and move it to the Trash with checks at every step. Scan results stay in memory.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ece9f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c0d13" media="(prefers-color-scheme: dark)">
+  <!-- Theme: apply a saved light/dark choice before first paint (no flash). Without it,
+       or without JavaScript, the page follows the system setting through CSS. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('discotech-theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+          var c = t === 'dark' ? '#0c0d13' : '#ece9f3';
+          document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.setAttribute('content', c); });
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="canonical" href="https://discotech.pixelabs.net/">
+
+  <!-- Icons: every file is generated from the app icon (Resources/AppIcon-1024.png). -->
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Discotech">
+  <meta property="og:title" content="Discotech: see where your Mac's disk space went">
+  <meta property="og:description" content="A free, open-source disk space map for macOS. Three views of every file by size, a careful way to clear space, and scan results that never leave memory.">
+  <meta property="og:url" content="https://discotech.pixelabs.net/">
+  <meta property="og:image" content="https://discotech.pixelabs.net/assets/og-card.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The Discotech app icon, a disco ball ringed by coloured blocks, next to the Ball view of a demo folder coloured from green for small to red for big.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Discotech: see where your Mac's disk space went">
+  <meta name="twitter:description" content="A free, open-source disk space map for macOS. Scan results never leave memory.">
+  <meta name="twitter:image" content="https://discotech.pixelabs.net/assets/og-card.jpg">
+  <meta name="twitter:image:alt" content="The Discotech app icon next to the Ball view of a demo folder.">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Discotech",
+    "description": "A disk space map for macOS. Scans a drive or folder and shows every file by size in three views, with a careful way to move what you don't need to the Trash.",
+    "url": "https://discotech.pixelabs.net/",
+    "image": "https://discotech.pixelabs.net/icon-512.png",
+    "screenshot": "https://discotech.pixelabs.net/assets/shots/hero-light-1600.webp",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "macOS 14 or later",
+    "processorRequirements": "Apple silicon",
+    "downloadUrl": "https://github.com/thepixelabs/discotech/releases/latest/download/Discotech-macOS.dmg",
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Organization", "name": "PixeLabs", "url": "https://pixelabs.net" },
+    "sameAs": ["https://github.com/thepixelabs/discotech"]
+  }
+  </script>
+  <!-- Third-party requests: none in this file. The owner enables Cloudflare Web Analytics (cookieless, no personal data) in the Cloudflare dashboard. No fonts or other scripts from other hosts. -->
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand-group">
+        <a class="brand" href="#top">
+          <img class="brand-icon" src="assets/brand/discotech-icon-64.webp" srcset="assets/brand/discotech-icon-64.webp 2x, assets/brand/discotech-icon-128.webp 3x" width="28" height="28" alt="">
+          Discotech
+        </a>
+        <a class="by-link" href="https://pixelabs.net">by PixeLabs</a>
+      </div>
+      <nav class="site-nav" aria-label="Sections">
+        <ul>
+          <li><a href="#clear">Clear space</a></li>
+          <li><a href="#views">Views</a></li>
+          <li><a href="#colour">Colour</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="#download">Download</a></li>
+          <li class="nav-by"><a href="https://pixelabs.net">by PixeLabs</a></li>
+        </ul>
+      </nav>
+      <a class="header-link" href="https://github.com/thepixelabs/discotech">GitHub</a>
+      <button type="button" class="theme-toggle" aria-label="Theme: System. Switch to Light" title="Theme: System. Click for Light" hidden>
+        <svg class="icon-system" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="10" rx="1.5"/><path d="M7 17h6M10 13.5V17"/></svg>
+        <svg class="icon-sun" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.8v2M10 16.2v2M1.8 10h2M16.2 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 12.2A7 7 0 0 1 7.8 3.5a7 7 0 1 0 8.7 8.7z"/></svg>
+        <span class="theme-label">System</span>
+      </button>
+      <span class="visually-hidden theme-status" role="status" aria-live="polite"></span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero: one idea (see where the space went), one primary action (download) -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div class="hero-copy">
+          <p class="eyebrow">Disk space map for macOS</p>
+          <h1 id="hero-title">See where your disk space went</h1>
+          <p class="lede">Discotech scans a drive or folder and maps every file by size, biggest first. See what's taking the space, then clear what you don't need.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/thepixelabs/discotech/releases/latest/download/Discotech-macOS.dmg">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12"/></svg>
+              Download for Mac
+            </a>
+          </div>
+        </div>
+
+        <figure class="shot hero-shot">
+          <div class="shot-media">
+              <img class="theme-light" src="assets/shots/hero-light-1600.webp"
+                   srcset="assets/shots/hero-light-960.webp 960w, assets/shots/hero-light-1600.webp 1600w"
+                   sizes="(min-width: 1208px) 1120px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async" fetchpriority="high"
+                   alt="The Discotech window scanning a demo folder of 173.3 GB. The sidebar lists its items largest first, from Movies at 57.07 GB down to Notes.txt at 12 KB. The Ball shows the same folders as rings around the centre, coloured from green for the smallest items through yellow and orange to red for the biggest: Movies and Wedding Edit are red, most folders orange, the smallest files green.">
+              <img class="theme-dark" src="assets/shots/hero-dark-1600.webp"
+                   srcset="assets/shots/hero-dark-960.webp 960w, assets/shots/hero-dark-1600.webp 1600w"
+                   sizes="(min-width: 1208px) 1120px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async" fetchpriority="high"
+                   alt="The Discotech window scanning a demo folder of 173.3 GB. The sidebar lists its items largest first, from Movies at 57.07 GB down to Notes.txt at 12 KB. The Ball shows the same folders as rings around the centre, coloured from green for the smallest items through yellow and orange to red for the biggest: Movies and Wedding Edit are red, most folders orange, the smallest files green.">
+            </div>
+          <figcaption>The Ball, coloured by size with the Traffic theme: green is small, red is big. Every screenshot here is the real app scanning a made-up demo folder.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section band" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title">From full disk to a clear answer</h2>
+          <p>Three steps, and the whole drive is in front of you.</p>
+        </div>
+        <ol class="steps">
+          <li class="card">
+            <h3>Pick a drive or folder</h3>
+            <p>Your startup disk is one click away. Any other drive works too, or a folder from <kbd>⌘</kbd><kbd>O</kbd>, or one dropped on the window.</p>
+          </li>
+          <li class="card">
+            <h3>Watch the scan count up</h3>
+            <p>The scanner runs in parallel and shows live totals. You can stop early and browse what it has measured so far.</p>
+          </li>
+          <li class="card">
+            <h3>Explore, then clear out</h3>
+            <p>Open the biggest folders, preview files, and collect what you don't need in the Crate.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Clearing space -->
+    <section class="section" id="clear" aria-labelledby="clear-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Findings and the Crate</p>
+          <h2 id="clear-title">Clear space without the guesswork</h2>
+          <p>Discotech points out what's usually safe to clear and says why.</p>
+        </div>
+
+        <article class="view view-findings" aria-labelledby="findings-title">
+          <div class="view-copy">
+            <p class="view-key">Findings</p>
+            <h3 id="findings-title">Findings: space that comes back on its own</h3>
+            <p>Findings spots rebuildable developer output: dependency and build folders sitting next to the project file that recreates them. It also lists well-known caches in your home folder.</p>
+            <ul class="chips" aria-label="What Findings recognises">
+              <li>node_modules</li><li>Rust target</li><li>.venv</li><li>.build</li><li>Pods</li><li>.next</li><li>Gradle and CMake build</li><li>__pycache__</li><li>Xcode build data</li><li>Simulator caches</li><li>Gradle caches</li><li>App caches</li>
+            </ul>
+            <p>Open a finding to see its items in a Finder-style list, with where each one lives and its size. Add one, or all of them, to the Crate.</p>
+          </div>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/finding-light-1600.webp"
+                   srcset="assets/shots/finding-light-960.webp 960w, assets/shots/finding-light-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="The Findings sidebar lists Node.js dependencies 3.77 GB, Rust build output 2.3 GB, Python virtual environments 1.44 GB and Swift package build output 435.1 MB, each with its reason. Node.js dependencies is open as a list of seven node_modules folders with their locations on the demo disk and their sizes, and an Add all to Crate button.">
+              <img class="theme-dark" src="assets/shots/finding-dark-1600.webp"
+                   srcset="assets/shots/finding-dark-960.webp 960w, assets/shots/finding-dark-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="The Findings sidebar lists Node.js dependencies 3.77 GB, Rust build output 2.3 GB, Python virtual environments 1.44 GB and Swift package build output 435.1 MB, each with its reason. Node.js dependencies is open as a list of seven node_modules folders with their locations on the demo disk and their sizes, and an Add all to Crate button.">
+            </div>
+            <figcaption>One finding opened: every item with its location and size.</figcaption>
+          </figure>
+        </article>
+
+        <div class="grid-2">
+          <article class="card feature">
+            <h3><span class="badge b-violet" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="4" rx="1"/><path d="M4.5 8v7a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V8M8 11h4"/></svg></span>The Crate</h3>
+            <ol class="flow">
+              <li>Drag files and folders into the Crate as you explore. It totals the space you'll get back.</li>
+              <li>Review the Crate (<kbd>⌘</kbd><kbd>⌫</kbd>) to see everything in one window. Take out what you want to keep.</li>
+              <li>Confirm once more. Items in system or app-data folders are flagged, and you're asked about each one on its own.</li>
+              <li>Everything goes to the Trash, never straight to deletion. Change your mind until you empty it.</li>
+            </ol>
+            <p class="note"><kbd>Return</kbd> never confirms a move.</p>
+          </article>
+
+          <article class="card feature">
+            <h3><span class="badge b-pink" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 4 5v4.5c0 3.8 2.6 6.9 6 8 3.4-1.1 6-4.2 6-8V5z"/><path d="m7.5 10 1.8 1.8 3.4-3.6"/></svg></span>Safety stoppers</h3>
+            <p>Two checks keep the wrong thing out of the Trash. The first runs when you add an item. macOS system folders, disk roots, and anything locked or protected by System Integrity Protection can never go in the Crate. Folders like your home folder, Documents, Downloads and Applications stay too, though what is inside them can go. If you try, Discotech tells you why.</p>
+            <p>The second runs right before anything moves. Discotech checks that each item is still exactly what it scanned: the same file, the same size, no folder swapped for a link. If anything changed, it refuses and asks you to rescan.</p>
+          </article>
+
+          <article class="card feature span-2">
+            <h3><span class="badge b-indigo" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 7h10M3 13l2-6 2 6a2 2 0 0 1-4 0zM13 13l2-6 2 6a2 2 0 0 1-4 0z"/></svg></span>Honest totals</h3>
+            <p>A hard link is a second name for the same file. Discotech counts that file once, and the Crate counts its space as freed only when every name goes to the Trash.</p>
+            <p>Scan a whole disk and the total adds up to its full capacity. Besides your files you see Free (space you can use now), Purgeable (counted as used, but macOS can clear it when it needs room) and Unseen (used space that no file explains).</p>
+            <p>Where macOS reports them, Unseen is split into swap, Recovery, update staging and local snapshots. Discotech only lists snapshots. It never deletes them.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Views -->
+    <section class="section band band-feature" id="views" aria-labelledby="views-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Views</p>
+          <h2 id="views-title">Three ways to read one scan</h2>
+          <p>Switch any time with the shortcut beside each name. The folder you're in, your selection and the Crate carry over, so you never lose your place.</p>
+        </div>
+
+        <article class="view view-ball" aria-labelledby="ball-title">
+          <div class="view-copy">
+            <p class="view-key">Ball · <kbd>⌘</kbd><kbd>1</kbd></p>
+            <h3 id="ball-title">Ball: the whole folder at once</h3>
+            <p>The folder you're in sits at the centre of the disco ball. What's inside spreads outward, ring by ring, up to six levels deep. Labels follow the curve.</p>
+            <ul class="ticks">
+              <li>Point at anything to light up its path to the centre</li>
+              <li>A card shows its size and its share of each folder above it</li>
+              <li>Click a segment to go in, click the centre to step back out</li>
+              <li>Or scroll: up to open the folder under the pointer, down to go back. The Floor does this too</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/ball-light-1600.webp"
+                   srcset="assets/shots/ball-light-960.webp 960w, assets/shots/ball-light-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Ball view zoomed into Movies, 57.07 GB. The pointer rests on Iceland, a folder inside Travel: its path to the centre is lit in orange and red while everything else fades, and a card reads Iceland, 6.23 GB, 35% of Travel, 11% of Movies.">
+              <img class="theme-dark" src="assets/shots/ball-dark-1600.webp"
+                   srcset="assets/shots/ball-dark-960.webp 960w, assets/shots/ball-dark-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Ball view zoomed into Movies, 57.07 GB. The pointer rests on Iceland, a folder inside Travel: its path to the centre is lit in orange and red while everything else fades, and a card reads Iceland, 6.23 GB, 35% of Travel, 11% of Movies.">
+            </div>
+            <figcaption>Zoomed into Movies, pointing at Iceland.</figcaption>
+          </figure>
+        </article>
+
+        <article class="view view-layers" aria-labelledby="layers-title">
+          <div class="view-copy">
+            <p class="view-key">Layers · <kbd>⌘</kbd><kbd>2</kbd></p>
+            <h3 id="layers-title">Layers: every level to true scale</h3>
+            <p>Columns read left to right. Each one splits the column before it in exact proportion, so up to four levels sit side by side at the same scale.</p>
+            <ul class="ticks">
+              <li>A folder that is almost all one subfolder folds into a single labelled band</li>
+              <li>Hundreds of tiny items merge into one "smaller items" band</li>
+              <li>Click a band to go in, click the spine to come back out</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/layers-light-1600.webp"
+                   srcset="assets/shots/layers-light-960.webp 960w, assets/shots/layers-light-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Layers view: four columns headed Inside Demo Mac, One level down, Two levels down and Three levels down. Movies, 57.07 GB or 33%, and Virtual Machines are red; Music, Applications, Pictures, Projects and Library are orange; the many small items further right are yellow and green.">
+              <img class="theme-dark" src="assets/shots/layers-dark-1600.webp"
+                   srcset="assets/shots/layers-dark-960.webp 960w, assets/shots/layers-dark-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Layers view: four columns headed Inside Demo Mac, One level down, Two levels down and Three levels down. Movies, 57.07 GB or 33%, and Virtual Machines are red; Music, Applications, Pictures, Projects and Library are orange; the many small items further right are yellow and green.">
+            </div>
+            <figcaption>The same demo folder in Layers.</figcaption>
+          </figure>
+        </article>
+
+        <article class="view view-floor" aria-labelledby="floor-title">
+          <div class="view-copy">
+            <p class="view-key">Floor · <kbd>⌘</kbd><kbd>3</kbd></p>
+            <h3 id="floor-title">Floor: one block per folder</h3>
+            <p>Rounded blocks, largest first, filling the window at any size. A block's area grows more slowly than its size, so one giant folder can't crowd out the rest. Labels still show the true size and share.</p>
+            <ul class="ticks">
+              <li>Large folders show their own largest items inside</li>
+              <li>Click a block to go in, click an empty spot to come back out</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/floor-light-1600.webp"
+                   srcset="assets/shots/floor-light-960.webp 960w, assets/shots/floor-light-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Floor view in the Heat theme: Movies and Virtual Machines are red blocks, Music, Applications, Pictures, Projects and Library orange, Backups, Documents and Downloads yellow, Screen Recordings green and the smallest files blue.">
+              <img class="theme-dark" src="assets/shots/floor-dark-1600.webp"
+                   srcset="assets/shots/floor-dark-960.webp 960w, assets/shots/floor-dark-1600.webp 1600w"
+                   sizes="(min-width: 960px) 660px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1600" height="1000" loading="lazy" decoding="async"
+                   alt="Floor view in the Heat theme: Movies and Virtual Machines are red blocks, Music, Applications, Pictures, Projects and Library orange, Backups, Documents and Downloads yellow, Screen Recordings green and the smallest files blue.">
+            </div>
+            <figcaption>Heat theme: cold blue is small, hot red is big.</figcaption>
+          </figure>
+        </article>
+
+        <ul class="everywhere" aria-label="Available in every view">
+          <li><kbd>Space</kbd> Quick Look</li>
+          <li>Show in Finder</li>
+          <li>Copy Path</li>
+          <li><kbd>⌘</kbd><kbd>↑</kbd> Enclosing folder</li>
+          <li><kbd>⌘</kbd><kbd>R</kbd> Scan again</li>
+          <li><kbd>⌘</kbd><kbd>?</kbd> Help</li>
+          <li>Full keyboard control in the list</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Colour -->
+    <section class="section" id="colour" aria-labelledby="colour-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Colour</p>
+          <h2 id="colour-title">Colour that tells you something</h2>
+          <p>Every view and the sidebar share one colour key, shown above the chart. Change it in Settings (<kbd>⌘</kbd><kbd>,</kbd>) and everything redraws at once, with no rescan.</p>
+        </div>
+        <div class="compare">
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/colour-gradient-light-960.webp"
+                   srcset="assets/shots/colour-gradient-light-640.webp 640w, assets/shots/colour-gradient-light-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="Floor view in the Gradient style, Studio theme, coloured by size: every block is a shade of violet, pale for small and deep for big. The key reads Smaller to Larger.">
+              <img class="theme-dark" src="assets/shots/colour-gradient-dark-960.webp"
+                   srcset="assets/shots/colour-gradient-dark-640.webp 640w, assets/shots/colour-gradient-dark-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="Floor view in the Gradient style, Studio theme, coloured by size: every block is a shade of violet, pale for small and deep for big. The key reads Smaller to Larger.">
+            </div>
+            <figcaption><strong>Gradient · Studio · Size</strong>One colour family. Lighter is smaller, stronger is bigger.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/colour-traffic-light-960.webp"
+                   srcset="assets/shots/colour-traffic-light-640.webp 640w, assets/shots/colour-traffic-light-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="The same Floor view in the Multicolour style, Traffic theme, coloured by size: Movies and Virtual Machines are red, most folders orange, Screen Recordings yellow and the smallest file green. The key runs from green to red.">
+              <img class="theme-dark" src="assets/shots/colour-traffic-dark-960.webp"
+                   srcset="assets/shots/colour-traffic-dark-640.webp 640w, assets/shots/colour-traffic-dark-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="The same Floor view in the Multicolour style, Traffic theme, coloured by size: Movies and Virtual Machines are red, most folders orange, Screen Recordings yellow and the smallest file green. The key runs from green to red.">
+            </div>
+            <figcaption><strong>Multicolour · Traffic · Size</strong>Green is small, yellow and orange are in between, red is big.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/colour-kind-light-960.webp"
+                   srcset="assets/shots/colour-kind-light-640.webp 640w, assets/shots/colour-kind-light-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="The same Floor view coloured by kind of content in the Clear theme: media folders are pale yellow, archives and disk images brown, apps blue, code orange, system and libraries dark blue, documents light blue. The key above names them: Media 87.62 GB, Archives 42.85 GB, Apps 15.2 GB and three more.">
+              <img class="theme-dark" src="assets/shots/colour-kind-dark-960.webp"
+                   srcset="assets/shots/colour-kind-dark-640.webp 640w, assets/shots/colour-kind-dark-960.webp 960w"
+                   sizes="(min-width: 960px) 360px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="960" height="600" loading="lazy" decoding="async"
+                   alt="The same Floor view coloured by kind of content in the Clear theme: media folders are pale yellow, archives and disk images brown, apps blue, code orange, system and libraries dark blue, documents light blue. The key above names them: Media 87.62 GB, Archives 42.85 GB, Apps 15.2 GB and three more.">
+            </div>
+            <figcaption><strong>Multicolour · Clear · Kind of content</strong>The key above the chart names each kind.</figcaption>
+          </figure>
+        </div>
+
+        <div class="colour-detail">
+          <div class="colour-cards">
+          <article class="card feature">
+            <h3><span class="badge b-violet" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h3V9H3zM8.5 15h3V5h-3zM14 15h3V2.5h-3z"/></svg></span>Colour by</h3>
+            <dl class="defs">
+              <div><dt>Size <span class="tag">Default</span> <span class="swatch swatch-studio" aria-hidden="true"></span> <span class="swatch swatch-traffic" aria-hidden="true"></span></dt><dd>Small items are calm, big items are loud.</dd></div>
+              <div><dt>Kind of content <span class="swatch swatch-kind" aria-hidden="true"><i style="--k: var(--kind-media)"></i><i style="--k: var(--kind-apps)"></i><i style="--k: var(--kind-code)"></i><i style="--k: var(--kind-documents)"></i><i style="--k: var(--kind-archives)"></i><i style="--k: var(--kind-system)"></i></span></dt><dd>Apps, media, documents, code, caches and so on each keep one colour everywhere.</dd></div>
+              <div><dt>Top-level folder</dt><dd>Everything inside a top-level folder shares its colour, even when you zoom in.</dd></div>
+            </dl>
+          </article>
+          <article class="card feature">
+            <h3><span class="badge b-pink" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><circle cx="7.5" cy="8" r="1"/><circle cx="12.5" cy="8" r="1"/><circle cx="10" cy="12.5" r="1"/></svg></span>Themes and palette style</h3>
+            <p>Pick a palette style, then one of its six themes.</p>
+            <dl class="defs">
+              <div><dt>Gradient <span class="swatch swatch-studio" aria-hidden="true"></span></dt><dd>Studio, Neon, Iridescent, Ocean, Sunset and Forest.</dd></div>
+              <div><dt>Multicolour <span class="swatch swatch-traffic" aria-hidden="true"></span></dt><dd>Several hues in a row, easy to tell apart at a glance: Traffic, Heat, Terrain, Spectrum, Aurora, and Clear, which is colour-blind safe.</dd></div>
+            </dl>
+            <p>Gradient is the default. Not sure what a colour means? The Help centre shows the key for your current setting.</p>
+          </article>
+          </div>
+          <figure class="shot settings-shot">
+            <div class="shot-media">
+              <img class="theme-light" src="assets/shots/settings-light-1280.webp"
+                   srcset="assets/shots/settings-light-640.webp 640w, assets/shots/settings-light-1280.webp 1280w"
+                   sizes="(min-width: 960px) 520px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1280" height="1510" loading="lazy" decoding="async"
+                   alt="The Discotech Settings window. Palette style offers two cards, Gradient and Multicolour, with Multicolour selected. Below are six theme cards: Traffic (green to red, selected), Heat (cold blue to hot red), Terrain (sea to summit), Spectrum (violet to red), Aurora (indigo to magenta) and Clear (colour-blind safe). Below, Colour by offers Size (selected), Kind of content and Top-level folder.">
+              <img class="theme-dark" src="assets/shots/settings-dark-1280.webp"
+                   srcset="assets/shots/settings-dark-640.webp 640w, assets/shots/settings-dark-1280.webp 1280w"
+                   sizes="(min-width: 960px) 520px, calc(100vw - 2 * clamp(16px, 4vw, 44px))"
+                   width="1280" height="1510" loading="lazy" decoding="async"
+                   alt="The Discotech Settings window. Palette style offers two cards, Gradient and Multicolour, with Multicolour selected. Below are six theme cards: Traffic (green to red, selected), Heat (cold blue to hot red), Terrain (sea to summit), Spectrum (violet to red), Aurora (indigo to magenta) and Clear (colour-blind safe). Below, Colour by offers Size (selected), Kind of content and Top-level folder.">
+            </div>
+            <figcaption>Settings: palette style, theme, and what colour means.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section band" id="privacy" aria-labelledby="privacy-title">
+      <div class="wrap">
+        <div class="card privacy">
+          <div class="section-head">
+            <p class="eyebrow">Privacy</p>
+            <h2 id="privacy-title">Your file list never leaves memory</h2>
+            <p>A map of your disk says a lot about you. Discotech treats it that way.</p>
+          </div>
+          <ul class="privacy-list">
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg>
+              <div><strong>Scans are never saved</strong><span>There's no scan history, and nothing is cached: a saved map of your files could expose them. Quit, and the results are gone.</span></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg>
+              <div><strong>The app has no account, analytics or network</strong><span>No sign-in and no tracking. The app contains no networking code. The source is open, so you can check.</span></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg>
+              <div><strong>Remembers settings, not files</strong><span>It keeps your view, theme, colour setting and window layout.</span></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg>
+              <div><strong>Full Disk Access is your call</strong><span>Without it, macOS keeps Mail, Messages, Safari and other protected folders out of every scan, and that space shows up as Unseen. Turn it on for complete totals.</span></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg>
+              <div><strong>This website counts page views</strong><span>The site uses Cloudflare Web Analytics, which sets no cookies and collects no personal data. The app is separate.</span></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section class="section" id="download" aria-labelledby="download-title">
+      <div class="wrap">
+        <article class="card download">
+          <img class="download-icon" src="assets/brand/discotech-icon-128.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
+          <div class="download-copy">
+            <p class="eyebrow">Download</p>
+            <h2 id="download-title">Get Discotech for your Mac</h2>
+            <p>The button downloads <code>Discotech-macOS.dmg</code> from the latest release. Open it and drag Discotech into Applications.</p>
+            <ul class="download-facts" aria-label="Requirements">
+              <li>macOS 14 Sonoma or later</li>
+              <li>Mac with Apple silicon</li>
+            </ul>
+          </div>
+          <div class="download-action">
+            <a class="button button-primary" href="https://github.com/thepixelabs/discotech/releases/latest/download/Discotech-macOS.dmg">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12"/></svg>
+              Download Discotech
+            </a>
+            <!-- The text between the release:meta markers is filled in at deploy time by
+                 scripts/stamp-site.py (version and size of the latest release). Visitors'
+                 browsers never ask GitHub for it; without a stamp the fallback text shows. -->
+            <p class="download-meta"><!--release:meta-->Latest version, disk image (.dmg)<!--/release:meta--></p>
+            <p class="download-links">
+              <a href="https://github.com/thepixelabs/discotech/releases/latest/download/Discotech-macOS.zip">Zip</a>
+              <span aria-hidden="true">·</span>
+              <a href="https://github.com/thepixelabs/discotech/releases/latest/download/checksums.txt">checksums.txt</a>
+              <span aria-hidden="true">·</span>
+              <a href="https://github.com/thepixelabs/discotech/releases">All releases</a>
+            </p>
+          </div>
+        </article>
+
+        <article class="card first-launch" aria-labelledby="launch-title">
+          <div class="first-launch-head">
+            <h3 id="launch-title">First launch: one extra step</h3>
+            <p>Discotech is ad-hoc signed and not yet notarized by Apple, because the project doesn't have a paid Apple Developer certificate. So macOS blocks the first launch of a downloaded copy. Pick either option below. Both affect only Discotech and change nothing else on your Mac.</p>
+          </div>
+          <div class="launch-options">
+            <section class="launch-option" aria-labelledby="option-a-title">
+              <p class="option-tag">Option A</p>
+              <h4 id="option-a-title">No Terminal: use Privacy &amp; Security</h4>
+              <ol class="flow launch-steps">
+                <li>Open Discotech from Applications. macOS says it can't check the app; click Done.</li>
+                <li>Open System Settings › Privacy &amp; Security and scroll down to the Security section.</li>
+                <li>Click Open Anyway next to the message that Discotech was blocked.</li>
+                <li>Confirm with Touch ID or your password, then click Open.</li>
+              </ol>
+              <p class="note">Open Anyway appears for about an hour after the blocked attempt. On macOS 14 you can also Control-click the app and choose Open; macOS 15 removed that shortcut.</p>
+            </section>
+            <section class="launch-option" aria-labelledby="option-b-title">
+              <p class="option-tag">Option B</p>
+              <h4 id="option-b-title">Terminal: one command</h4>
+              <ol class="flow launch-steps">
+                <li>Drag Discotech into Applications.</li>
+                <li>
+                  Open Terminal (Applications › Utilities) and run:
+                  <div class="cmd">
+                    <code id="cmd-quarantine">xattr -dr com.apple.quarantine /Applications/Discotech.app</code>
+                    <button type="button" class="copy-button" data-copy="cmd-quarantine" hidden>Copy</button>
+                  </div>
+                </li>
+                <li>Open Discotech as usual. From then on it opens like any other app.</li>
+              </ol>
+              <p class="note">The command removes the "downloaded from the internet" flag. It doesn't turn off Gatekeeper.</p>
+            </section>
+          </div>
+          <div class="launch-notes">
+            <p><strong>Want to check first?</strong> Read the <a href="https://github.com/thepixelabs/discotech">source</a>, or compare your download with the <code>Discotech-macOS.dmg</code> line in <a href="https://github.com/thepixelabs/discotech/releases/latest/download/checksums.txt"><code>checksums.txt</code></a> from the same release:</p>
+            <div class="cmd">
+              <code id="cmd-checksum">shasum -a 256 ~/Downloads/Discotech-macOS.dmg</code>
+              <button type="button" class="copy-button" data-copy="cmd-checksum" hidden>Copy</button>
+            </div>
+            <p>Or build it yourself from the repository with <code>./build.sh</code>.</p>
+          </div>
+          <p class="copy-status" role="status" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Open source -->
+    <section class="section band" id="contribute" aria-labelledby="oss-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Open source</p>
+          <h2 id="oss-title">Free, open, and yours to improve</h2>
+          <p>Discotech is released under the MIT License. Use it, study it, fork it, or help make it better. It's native Swift, SwiftUI and AppKit, with no third-party dependencies.</p>
+        </div>
+        <div class="oss">
+          <article class="card feature">
+            <h3>Report what's off</h3>
+            <p>A number that doesn't add up, a folder that looks wrong, a view that breaks at some window size. <a href="https://github.com/thepixelabs/discotech/issues">Open an issue</a>.</p>
+          </article>
+          <article class="card feature">
+            <h3>Teach Findings a rule</h3>
+            <p>Each rule is one entry in <code>Model/Findings.swift</code>: a folder name, the file that proves it's rebuildable, and a one-line reason.</p>
+          </article>
+          <article class="card feature">
+            <h3>Polish a view</h3>
+            <p>Colours, spacing and motion come from one token file, so changes stay consistent. Start with <a href="https://github.com/thepixelabs/discotech/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+          </article>
+        </div>
+        <div class="oss-actions">
+          <a class="button button-secondary" href="https://github.com/thepixelabs/discotech">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 6 3 10l4 4M13 6l4 4-4 4"/></svg>
+            Browse the repository
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="footer-brand">
+        <img src="assets/brand/discotech-icon-64.webp" width="24" height="24" alt="" loading="lazy" decoding="async">
+        <span>© 2026 PixeLabs. Discotech is released under the MIT License.</span>
+      </p>
+      <ul>
+        <li><a href="https://github.com/thepixelabs/discotech">GitHub</a></li>
+        <li><a href="https://github.com/thepixelabs/discotech/issues">Issues</a></li>
+        <li><a href="https://github.com/thepixelabs/discotech/blob/main/LICENSE">License</a></li>
+        <li><a href="https://pixelabs.net">PixeLabs</a></li>
+      </ul>
+    </div>
+  </footer>
+  <script>
+    // Theme switch: System, Light, Dark, cycled in that order. The icon and label show the
+    // current choice. System stores nothing and follows the OS setting live; Light and Dark
+    // are kept in this browser (localStorage) and applied before first paint by the script
+    // in <head>. Without JavaScript the page follows the system and the switch stays hidden.
+    (function () {
+      var root = document.documentElement;
+      var key = 'discotech-theme';
+      var order = ['system', 'light', 'dark'];
+      var names = { system: 'System', light: 'Light', dark: 'Dark' };
+      var colours = { light: '#ece9f3', dark: '#0c0d13' };
+      var toggle = document.querySelector('.theme-toggle');
+      var label = document.querySelector('.theme-label');
+      var status = document.querySelector('.theme-status');
+      var metas = document.querySelectorAll('meta[name="theme-color"]');
+      function choice() { return root.getAttribute('data-theme') || 'system'; }
+      function paintMeta() {
+        var forced = root.getAttribute('data-theme');
+        metas.forEach(function (m) {
+          var media = m.getAttribute('media') || '';
+          m.setAttribute('content', forced ? colours[forced] : (media.indexOf('dark') >= 0 ? colours.dark : colours.light));
+        });
+      }
+      function sync() {
+        if (!toggle) { return; }
+        var current = choice();
+        var next = order[(order.indexOf(current) + 1) % order.length];
+        toggle.setAttribute('aria-label', 'Theme: ' + names[current] + '. Switch to ' + names[next]);
+        toggle.title = 'Theme: ' + names[current] + '. Click for ' + names[next];
+        if (label) { label.textContent = names[current]; }
+      }
+      function choose(mode) {
+        if (mode === 'system') { root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme', mode); }
+        try {
+          if (mode === 'system') { localStorage.removeItem(key); } else { localStorage.setItem(key, mode); }
+        } catch (e) {}
+        paintMeta();
+        sync();
+        if (status) { status.textContent = 'Theme: ' + names[mode]; }
+      }
+      if (toggle) {
+        toggle.hidden = false;
+        toggle.addEventListener('click', function () {
+          choose(order[(order.indexOf(choice()) + 1) % order.length]);
+        });
+      }
+      paintMeta();
+      sync();
+    })();
+  </script>
+  <script>
+    // Copy buttons for the Terminal commands. Without JavaScript the buttons stay hidden and
+    // the commands remain plain, selectable text.
+    (function () {
+      var status = document.querySelector('.copy-status');
+      function say(text) { if (status) { status.textContent = text; } }
+      document.querySelectorAll('.copy-button').forEach(function (button) {
+        var code = document.getElementById(button.getAttribute('data-copy'));
+        if (!code) { return; }
+        button.hidden = false;
+        button.addEventListener('click', function () {
+          var text = code.textContent;
+          function done() {
+            button.textContent = 'Copied';
+            say('Command copied.');
+            setTimeout(function () { button.textContent = 'Copy'; }, 2000);
+          }
+          function fallback() {
+            var range = document.createRange();
+            range.selectNodeContents(code);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            say('Command selected. Press Command-C to copy it.');
+          }
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, fallback);
+          } else {
+            fallback();
+          }
+        });
+      });
+    })();
+  </script>
+  <script>
+    // Marks the header link of the chapter in view. Local only: no network, and the page
+    // works the same without it.
+    (function () {
+      if (!('IntersectionObserver' in window)) { return; }
+      var links = {};
+      document.querySelectorAll('.site-nav a[href^="#"]').forEach(function (a) {
+        links[a.getAttribute('href').slice(1)] = a;
+      });
+      var visible = {};
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+        var current = Object.keys(links).filter(function (id) { return visible[id]; })[0];
+        Object.keys(links).forEach(function (id) {
+          if (id === current) { links[id].setAttribute('aria-current', 'true'); }
+          else { links[id].removeAttribute('aria-current'); }
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      Object.keys(links).forEach(function (id) {
+        var section = document.getElementById(id);
+        if (section) { observer.observe(section); }
+      });
+    })();
+  </script>
+</body>
+</html>

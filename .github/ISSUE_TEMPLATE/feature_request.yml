@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an improvement, a new Findings rule, or a change to a view.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Two things are fixed by design: scan results stay in memory (never written to disk), and the app has no networking. Ideas that need either are out of scope.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The situation or problem, before any solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+      description: How you imagine it working. For a Findings rule, give the folder name, the file next to it that proves it can be rebuilt, and the tool that rebuilds it.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do today instead?
