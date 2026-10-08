@@ -47,9 +47,11 @@ struct Finding: Identifiable {
 ///    Mail attachment copies, VirtualBox machines, installers and archives in Downloads.
 /// 4. *Catch-alls*: the rest of `~/Library/Caches` and `~/Library/Logs`.
 /// 5. *One tree walk* (explicit stack, no recursion): marker-pair dev output (a folder
-///    name plus a sibling marker file — `node_modules` + `package.json`), then by
-///    extension and size: virtual machine bundles, disk images, large videos in
-///    Movies/Downloads/Desktop, and the largest files left over.
+///    name plus a sibling marker file — `node_modules` + `package.json`), Python virtual
+///    environments by content (any folder holding `pyvenv.cfg`: Safe beside a recipe
+///    such as `requirements.txt` or `uv.lock`, Review with none), then by extension and
+///    size: virtual machine bundles, disk images, large videos in Movies/Downloads/Desktop,
+///    and the largest files left over.
 ///
 /// **Never in two findings:** a node already claimed, or inside a claimed node, is
 /// dropped; a folder that *holds* a claimed node is split into its other children (so
@@ -280,9 +282,8 @@ enum Findings {
         devRule("node-modules", "Node.js dependencies",
                 "Reinstalled automatically the next time you run npm, yarn or pnpm install.", "shippingbox",
                 folders: ["node_modules"], markers: ["package.json"]),
-        devRule("python-venv", "Python virtual environments",
-                "Recreated automatically the next time you set up the project.", "leaf",
-                folders: [".venv", "venv"], markers: ["pyproject.toml", "requirements.txt", "setup.py"]),
+        // Python virtual environments are matched by content, not name: see
+        // `pythonEnvironmentSpec(for:in:parentIsHome:)`.
         devRule("native-build", "Build output", rebuilt, "hammer",
                 folders: ["build"], markers: ["build.gradle", "build.gradle.kts", "cmakelists.txt", "pubspec.yaml"]),
         devRule("swiftpm-build", "Swift package build output",
@@ -357,6 +358,48 @@ enum Findings {
             }
         }
         return nil
+    }
+
+    // MARK: - Tree walk: Python virtual environments
+
+    private static let pythonEnvSpec = Spec(
+        id: "python-venv", title: "Python virtual environments",
+        reason: "Recreated automatically the next time you set up the project.",
+        icon: "leaf", unitLabel: "environment")
+    private static let pythonEnvNoRecipeSpec = Spec(
+        id: "python-venv-no-recipe", title: "Python environments with no requirements file",
+        reason: "Nothing next to it lists what is installed, so check before clearing it.",
+        icon: "leaf", unitLabel: "environment", tier: .review)
+
+    /// Names that count as an environment even without `pyvenv.cfg` inside (one that was
+    /// half deleted), but only with a recipe beside them.
+    private static let pythonEnvNames: Set<String> = [".venv", "venv", "Venv"]
+
+    /// Lowercased names of files that list a project's Python packages, so an environment
+    /// beside one can be set up again. Any `requirements*.txt` counts too.
+    private static let pythonRecipeNames: Set<String> = [
+        "pyproject.toml", "requirements.txt", "setup.py", "setup.cfg", "pipfile", "pipfile.lock",
+        "poetry.lock", "uv.lock", "environment.yml", "environment.yaml", "tox.ini",
+    ]
+
+    private static func isPythonRecipe(_ name: String) -> Bool {
+        let lower = name.lowercased()
+        return pythonRecipeNames.contains(lower) || (lower.hasPrefix("requirements") && lower.hasSuffix(".txt"))
+    }
+
+    /// `venv`, `virtualenv` and `uv` all write `pyvenv.cfg` at the top of an environment,
+    /// so that file, not the folder's name, makes `node` one. A conda environment
+    /// (`conda-meta`) is left to the conda rule. Safe when a recipe sits beside it; Review
+    /// when nothing does, since then only the environment knows what was installed. The
+    /// home folder is never a project, so a recipe there doesn't count.
+    private static func pythonEnvironmentSpec(for node: FileNode, in parent: FileNode, parentIsHome: Bool) -> Spec? {
+        let byContent = node.children.contains { $0.name == "pyvenv.cfg" }
+            && !node.children.contains { $0.name == "conda-meta" }
+        guard byContent || pythonEnvNames.contains(node.name) else { return nil }
+        if !parentIsHome, parent.children.contains(where: { !$0.isDirectory && isPythonRecipe($0.name) }) {
+            return pythonEnvSpec
+        }
+        return byContent ? pythonEnvNoRecipeSpec : nil
     }
 
     // MARK: - Tree walk: extension and size
@@ -585,9 +628,14 @@ enum Findings {
                     if node.isPackage || node.isSynthetic || noEntry.contains(id) { continue } // a bundle is one thing
                     if !holdsClaimed.contains(id) {
                         // A project is never the home folder itself (`~/.cache`, `~/Library`).
-                        if folder !== homeNode, let rule = matchingDevOutputRule(for: node) {
+                        let parentIsHome = folder === homeNode
+                        if !parentIsHome, let rule = matchingDevOutputRule(for: node) {
                             take(node, as: rule.spec)
                             continue // never descend into a matched folder, even one Safety refused
+                        }
+                        if let spec = pythonEnvironmentSpec(for: node, in: folder, parentIsHome: parentIsHome) {
+                            take(node, as: spec)
+                            continue
                         }
                         if node.size >= minBundleFolder {
                             let ext = fileExtension(node.name)

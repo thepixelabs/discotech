@@ -1207,25 +1207,6 @@ kbd {
 .b-violet { --badge: var(--badge-violet); }
 .b-indigo { --badge: var(--badge-indigo); }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-  margin: var(--space-xs) 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chips li {
-  padding: var(--space-2xs) var(--space-s);
-  border-radius: 6px;
-  background: var(--surface-card);
-  border: 1px solid var(--line-hairline);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--text-primary);
-}
-
 .defs {
   display: grid;
   gap: var(--space-l);
